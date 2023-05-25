@@ -2,10 +2,13 @@ import { getFetch } from './hooks/getFetch.js'
 // *retorna un string []
 export const getProvincias = async () => {
   try {
+    // ? obtengo las provincias
     const { provincias } = await getFetch(
       'https://apis.datos.gob.ar/georef/api/provincias'
     )
+    // ? ordeno las provincias por id
     const ordenId = provincias.sort((a, b) => a.id - b.id)
+    // ? retorno un string de provincias para guardarlas en la sessionStorage
     return JSON.stringify(ordenId)
   } catch (e) {
     console.log('No se pudo obtener las provincias')

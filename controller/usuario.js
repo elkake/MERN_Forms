@@ -3,49 +3,40 @@ import { response, request } from 'express'
 
 // * Obtener TODOS los datos por columna
 const obtenerUser = async (req = request, res = response) => {
-  const {
-    nombre,
-    apellido,
-    correo,
-    edad,
-    telefono,
-    provincia,
-    ciudad,
-    direccion
-  } = req.query
+  /*
+  // obtener por columnas
 
-  // Crear un arreglo que contiene los campos con los que se filtrará
-  const arreglo = [
-    nombre,
-    apellido,
-    correo,
-    edad,
-    telefono,
-    provincia,
-    ciudad,
-    direccion
-  ]
-  // Crear un arreglo que contiene los campos no nulos
-  const arregloListo = []
+  const datosUsuario = req.query
 
-  // quitar los null de arreglo
-  // ?no uso filter me sigue retornando la misma cantidad de elementos vacios
-  arreglo.forEach((item) => {
-    if (item != null) {
-      arregloListo.push(item)
+  const arreglo = []
+
+  for (const prop in datosUsuario) {
+    if (datosUsuario[prop] !== '') {
+      arreglo.push(datosUsuario[prop])
     }
-  })
+  }
 
   // Si el arreglo de campos no nulos no está vacío, filtrar por esos campos; si no, excluir la contraseña
   const usuarios = await Usuario.findAll({
-    attributes:
-      arregloListo.length > 0 ? arregloListo : { exclude: ['password'] }
+    attributes: arreglo.length > 0 ? arreglo : { exclude: ['password'] }
   })
 
   res.json({
     msg: 'get API - usuario',
     usuarios,
     registros: usuarios.length
+  })
+  */
+
+  // obtener todos los datos
+  const usuarios = await Usuario.findAll()
+  const activos = usuarios.filter((e) => e.estado === 'activo').length
+
+  res.json({
+    msg: 'get API - usuario',
+    usuarios,
+    activos,
+    inactivos: usuarios.length - activos
   })
 }
 
@@ -97,16 +88,25 @@ const crearUser = async (req = request, res = response) => {
 const editarUserbyId = async (req = request, res = response) => {
   const { id } = req.params
   const usuario = req.body
+  try {
+    const resp = await Usuario.update(usuario, { where: { id } })
 
-  const resp = await Usuario.update(usuario, { where: { id } })
-
-  res.send(resp[0] ? 'Usuario actualizado' : 'Usuario no actualizado')
+    res.json({
+      msg: resp[0] ? 'Usuario actualizado' : 'Usuario no actualizado'
+    })
+  } catch (error) {
+    res.json({
+      msg: 'No se pudo actualizar el usuario',
+      error
+    })
+  }
 }
 
 // * Eliminar un usuario por ID
 const eliminarUserbyId = async (req = request, res = response) => {
-  const { id } = req.params
-  const resp = await Usuario.destroy({ where: { id } })
+  const id = req.params
+  // const resp = await Usuario.destroy({ where: { id } })
+  const resp = await Usuario.update({ estado: 'inactivo' }, { where: id })
   res.send(resp ? 'Usuario eliminado' : 'Usuario no eliminado')
 }
 

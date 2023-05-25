@@ -1,6 +1,5 @@
 import express from 'express'
 import cors from 'cors'
-import routerProduct from '../routes/api.routes.js'
 import { PORT } from '../helper/conectionEnv.js'
 import { sequelize } from '../helper/sequelizeBD.js'
 import routerUser from '../routes/user.routes.js'
@@ -8,7 +7,6 @@ class ModelServer {
   constructor() {
     this.port = PORT
     this.app = express()
-    this.productosPath = '/clientes'
     this.usuarioPath = '/usuario'
     this.middlewares()
     this.routes()
@@ -35,7 +33,6 @@ class ModelServer {
   }
 
   routes() {
-    this.app.use(this.productosPath, routerProduct)
     this.app.use(this.usuarioPath, routerUser)
   }
 

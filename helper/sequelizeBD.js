@@ -67,6 +67,11 @@ export const Usuario = sequelize.define(
     password: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    estado: {
+      type: DataTypes.ENUM('activo', 'inactivo'),
+      allowNull: false,
+      defaultValue: 'activo'
     }
   },
   {
